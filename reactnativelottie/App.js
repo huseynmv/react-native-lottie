@@ -1,117 +1,142 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- * @flow strict-local
- */
+import {StyleSheet, Text, View} from 'react-native';
+import React, {useEffect, useState} from 'react';
+import DeviceInfo from 'react-native-device-info';
+import Lottie from 'lottie-react-native';
+// import {getBatteryLevel} from 'react-native-device-info';
+const App = () => {
+  const [batteryLevel, setbatteryLevel] = useState('');
+  const [isCharging, setisCharging] = useState(false)
 
-import React from 'react';
-import type {Node} from 'react';
-import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  useColorScheme,
-  View,
-} from 'react-native';
+  DeviceInfo.getBatteryLevel().then(level => {
+    setbatteryLevel(level);
+  });
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+  DeviceInfo.isBatteryCharging().then(isCharging => {
+    setisCharging(isCharging)
+  });
 
-/* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
- * LTI update could not be added via codemod */
-const Section = ({children, title}): Node => {
-  const isDarkMode = useColorScheme() === 'dark';
+  console.log(isCharging);
+
+  console.log(batteryLevel);
+
+  let name = DeviceInfo.getModel();
+  let version = DeviceInfo.getSystemVersion();
+  let brand = DeviceInfo.getBrand();
+  let d_id = DeviceInfo.getDeviceId();
+  let build_numbeer = DeviceInfo.getBuildNumber();
+
+  const FullyCharged = () => {
+
+    if (batteryLevel * 100 == 100) {
+            return (
+              <>
+                <Lottie
+                  style={styles.animation}
+                  source={require('./assets/full.json')}
+                  autoPlay
+                  loop
+                />
+              </>
+            )
+    }
+      
+
+  }
+
+  const FivePercent = () => {
+        if (batteryLevel * 100 <= 5) {
+          return (
+            <>
+              <Lottie
+                style={styles.animation}
+                source={require('./assets/5percent.json')}
+                autoPlay
+                loop
+              />
+            </>
+          );
+        }
+  }
+
+  const TwentyPercent = () => {
+     if (6 > batteryLevel * 100 <= 20) {
+       return (
+         <>
+           <Lottie
+             style={styles.animation}
+             source={require('./assets/20percent.json')}
+             autoPlay
+             loop
+           />
+         </>
+       );
+     }
+  }
+
+  const Charging = () => {
+    if (isCharging) {
+                  return (
+                    <>
+                      <Lottie
+                        style={styles.animation}
+                        source={require('./assets/charging.json')}
+                        autoPlay
+                        loop
+                      />
+                    </>
+                  );
+    }
+  }
+
   return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
+    <View>
+      <View style={styles.header}>
+        <Text style={styles.header.text}>Device info</Text>
+      </View>
+      <View style={styles.information}>
+        <Text style={styles.information.text}>Name : {name}</Text>
+        <Text style={styles.information.text}>Version : {version}</Text>
+        <Text style={styles.information.text}>Brand : {brand}</Text>
+        <Text style={styles.information.text}>Device ID : {d_id}</Text>
+        <Text style={styles.information.text}>
+          Build Number : {build_numbeer}
+        </Text>
+      </View>
+      <View style={styles.animationContainer}>
+        {(FullyCharged(), FivePercent(), TwentyPercent(), Charging())}
+      </View>
     </View>
   );
 };
 
-const App: () => Node = () => {
-  const isDarkMode = useColorScheme() === 'dark';
-
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
-
-  return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
-      />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.js</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
-        </View>
-      </ScrollView>
-    </SafeAreaView>
-  );
-};
+export default App;
 
 const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    text: {
+      fontSize: 22,
+      fontWeight: '600',
+    },
   },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
+  information: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+    text: {
+      fontSize: 18,
+      fontWeight: '400',
+      padding: 5,
+    },
   },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
+  animationContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexDirection: 'row',
   },
-  highlight: {
-    fontWeight: '700',
+  animation: {
+    width: 100,
+    height: 100,
   },
 });
-
-export default App;
